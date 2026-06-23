@@ -1,4 +1,4 @@
-const CACHE_NAME = "menu-v1";
+const CACHE_NAME = "menu-v2";
 
 const ASSETS = [
   "/menu.github.io/",
