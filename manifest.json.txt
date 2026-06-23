@@ -1,0 +1,22 @@
+{
+  "name": "Меню",
+  "short_name": "Меню",
+  "start_url": "/menu.github.io/index.html",
+  "scope": "/menu.github.io/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/menu.github.io/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/menu.github.io/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
