@@ -1,40 +1,49 @@
-/* =========================
-   STATE
-========================= */
-
 let historyStack = [];
 let selectedWords = [];
 let participant = "";
 let currentPage = "Закуски";
 
+let timeOffset = 0;
+
 /* =========================
-   TIME OFFSET (NEW FEATURE)
+   INIT SAFE
 ========================= */
 
-let timeOffset = parseInt(localStorage.getItem("timeOffset") || "0", 10);
+document.addEventListener("DOMContentLoaded", () => {
 
-const timeSelect = document.getElementById("timeOffsetSelect");
+    /* ===== TIME SELECT ===== */
 
-/* восстановление выбора */
-if (timeSelect) {
-    timeSelect.value = String(timeOffset);
+    const timeSelect = document.getElementById("timeOffsetSelect");
 
-    timeSelect.addEventListener("change", () => {
+    timeOffset = parseInt(localStorage.getItem("timeOffset") || "0", 10);
 
-        timeOffset = parseInt(timeSelect.value, 10);
+    if (timeSelect) {
 
-        localStorage.setItem("timeOffset", timeOffset);
+        timeSelect.value = String(timeOffset);
 
-        /* маленькая "вибрация" */
-        timeSelect.classList.add("bump");
+        timeSelect.addEventListener("change", () => {
 
-        setTimeout(() => {
-            timeSelect.classList.remove("bump");
-        }, 160);
+            timeOffset = parseInt(timeSelect.value, 10);
 
-        updateReceiptPreview();
-    });
-}
+            localStorage.setItem("timeOffset", timeOffset);
+
+            /* лёгкий "упор" */
+            timeSelect.classList.add("bump");
+
+            setTimeout(() => {
+                timeSelect.classList.remove("bump");
+            }, 160);
+
+            updateReceiptPreview();
+
+        });
+
+    }
+
+    renderPage("Закуски");
+    updateReceiptPreview();
+
+});
 
 /* =========================
    PARTICIPANT
@@ -42,33 +51,16 @@ if (timeSelect) {
 
 function applyParticipant() {
 
-    const val = document.getElementById("participantInput").value.trim();
+    const input = document.getElementById("participantInput");
 
-    participant = val;
+    participant = input ? input.value.trim() : "";
 
     updateReceiptPreview();
+
 }
 
 /* =========================
-   KEYBOARD
-========================= */
-
-document.addEventListener("keydown", (e) => {
-
-    const el = document.activeElement;
-
-    if (el && el.id === "participantInput" && e.key === "Enter") {
-
-        e.preventDefault();
-
-        applyParticipant();
-
-    }
-
-});
-
-/* =========================
-   MENU DATA (оставляем как есть)
+   DATA
 ========================= */
 
 const pages = {
@@ -86,55 +78,24 @@ const pages = {
 };
 
 const transition = {
-    Закуски:{"Сырное":"Супы","Рулетики":"Рыбный","Мясная":"Мясо","Сморчки":"Супы","Острые":"Основные","Раки":"Рыбный","Мидии":"Мясо"},
-    Мясо:{"Пикантная":"Пироги","Бифштекс":"Булки","Хаггис":"Хлеб","Перепела":"Пироги","Дичь":"Десерты"},
-    Супы:{"Биск":"Булки","Деревенский":"Десерты","Харчо":"Хлеб","Пивной":"Пироги","Диетический":"Десерты"},
-    Основные:{"Хинкали":"Хлеб","Паста":"Пироги","Долма":"Десерты","Буррито":"Булки","Плов":"Пироги"},
-    Рыбный:{"Дорадо":"Десерты","Палтус":"Пироги","Белуга":"Булки","Хек":"Хлеб","Пангасиус":"Пироги"},
-    Булки:{"Пампушка":"Прохладительные","Пражская":"Прохладительные","Кекс":"Кофе","Плетенка":"Прохладительные","Крендель":"Кофе"},
-    Хлеб:{"Португальский":"Прохладительные","Пури":"Прохладительные","Калач":"Кофе","Пшенично":"Прохладительные","Кумач":"Кофе"},
-    Пироги:{"Пирожное Н":"Прохладительные","Картофельный":"Кофе","Карибский":"Кофе","Пирожное М":"Прохладительные","Кляфути":"Кофе"},
-    Десерты:{"Карамельный":"Кофе","Птичье":"Прохладительные","Профитроли":"Прохладительные","Кулич":"Кофе","Круассан":"Кофе"},
-    Кофе:{},
-    Прохладительные:{}
+    Закуски:{"Сырное":"Супы","Рулетики":"Рыбный","Мясная":"Мясо","Сморчки":"Супы","Острые":"Основные","Раки":"Рыбный","Мидии":"Мясо"}
 };
 
 /* =========================
-   FULL NAMES + PRICES (оставляем как есть)
-========================= */
-
-const fullNames = {
-    "Сырное":"Сырное ассорти",
-    "Рулетики":"Рулетики",
-    "Мясная":"Мясная тарелка",
-    "Сморчки":"Сморчки",
-    "Острые":"Острые креветки",
-    "Раки":"Раки",
-    "Мидии":"Мидии"
-    /* ... остальные оставь как у тебя ... */
-};
-
-const prices = {
-    "Сырное":1600,
-    "Рулетики":1850
-    /* ... остальные ... */
-};
-
-/* =========================
-   PAGE RENDER
+   RENDER
 ========================= */
 
 function renderPage(page){
 
-    setFinalMode(false);
+    const list = document.getElementById("list");
+    const title = document.getElementById("title");
+
+    if (!list || !title) return;
 
     currentPage = page;
 
-    const listDiv = document.getElementById("list");
-
-    listDiv.innerHTML = "";
-
-    document.getElementById("title").textContent = page;
+    list.innerHTML = "";
+    title.textContent = page;
 
     (pages[page] || []).forEach(item => {
 
@@ -142,122 +103,90 @@ function renderPage(page){
 
         div.className = "item";
 
-        div.textContent = fullNames[item] || item;
+        div.textContent = item;
 
-        if(selectedWords.includes(item)) div.classList.add("selected");
+        if (selectedWords.includes(item)) {
+            div.classList.add("selected");
+        }
 
         div.onclick = () => selectItem(page, item);
 
-        listDiv.appendChild(div);
+        list.appendChild(div);
 
     });
 
-    updateReceiptPreview();
 }
 
 /* =========================
-   RECEIPT TIME (FIXED)
+   TIME
 ========================= */
 
-function getReceiptTime(){
+function getReceiptTime() {
 
-    const now = new Date();
-
-    return new Date(now.getTime() + timeOffset * 60000);
+    return new Date(Date.now() + timeOffset * 60000);
 
 }
 
 /* =========================
-   CANVAS RECEIPT
+   CANVAS
 ========================= */
 
-function renderReceiptToCanvas({ download = false } = {}){
+function renderReceiptToCanvas({ download = false } = {}) {
 
     const canvas = document.getElementById("canvas");
-
     const ctx = canvas.getContext("2d");
-
-    const scale = download ? 2 : 1;
 
     const width = 300;
 
-    const lineHeight = 28;
-
-    const height = 500 + selectedWords.length * 28;
-
-    canvas.width = width * scale;
-
-    canvas.height = height * scale;
-
-    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    canvas.width = width;
+    canvas.height = 400;
 
     ctx.fillStyle = "#fff";
-
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, width, 400);
 
     ctx.fillStyle = "#000";
-
     ctx.font = "16px monospace";
 
     let y = 40;
 
-    selectedWords.forEach(item => {
+    selectedWords.forEach(w => {
 
-        const text = fullNames[item] || item;
+        ctx.fillText(w, 10, y);
 
-        const price = prices[item] || 0;
-
-        ctx.fillText(`${text} ... ${price}₽`, 10, y);
-
-        y += lineHeight;
+        y += 24;
 
     });
 
-    y += 20;
-
-    const now = getReceiptTime();
-
-    ctx.textAlign = "center";
+    const t = getReceiptTime();
 
     ctx.fillText(
-        now.toLocaleString(),
-        width / 2,
-        y
+        t.toLocaleTimeString(),
+        10,
+        y + 40
     );
 
-    if(download){
-
-        const link = document.createElement("a");
-
-        link.download = "receipt.jpg";
-
-        link.href = canvas.toDataURL("image/jpeg", 0.95);
-
-        link.click();
-
-    } else {
+    if (!download) {
 
         document.getElementById("preview").innerHTML =
-            `<img src="${canvas.toDataURL("image/jpeg")}" />`;
+            `<img src="${canvas.toDataURL()}">`;
 
     }
+
 }
 
 /* =========================
-   UPDATE PREVIEW
+   UPDATE
 ========================= */
 
-function updateReceiptPreview(){
-
+function updateReceiptPreview() {
     renderReceiptToCanvas();
-
 }
 
 /* =========================
-   SELECT ITEM
+   SELECT
 ========================= */
 
-function selectItem(page, item){
+function selectItem(page, item) {
 
     selectedWords.push(item);
 
@@ -265,30 +194,24 @@ function selectItem(page, item){
 
     const next = transition[page]?.[item];
 
-    if(next){
-
+    if (next) {
         historyStack.push(page);
-
         renderPage(next);
-
     }
+
 }
 
 /* =========================
    BACK
 ========================= */
 
-function goBack(){
+function goBack() {
 
     selectedWords.pop();
 
     const prev = historyStack.pop();
 
-    if(prev){
-
-        renderPage(prev);
-
-    }
+    if (prev) renderPage(prev);
 
 }
 
@@ -296,22 +219,11 @@ function goBack(){
    RESET
 ========================= */
 
-function resetPage(){
+function resetPage() {
 
     selectedWords = [];
-
     historyStack = [];
-
-    participant = "";
 
     renderPage("Закуски");
 
 }
-
-/* =========================
-   INIT
-========================= */
-
-renderPage("Закуски");
-
-updateReceiptPreview();
