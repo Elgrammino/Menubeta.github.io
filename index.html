@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Меню</title>
 
 <link rel="manifest" href="manifest.json">
 
 <meta name="theme-color" content="#121212">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Меню">
@@ -15,603 +18,177 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="apple-touch-icon.png">
 
-<style>
-#app{
-    width:100%;
-    max-width:none;
-    margin:0;
-}
+<link rel="stylesheet" href="style.css">
 
-@media (min-width: 768px){
-  #app{
-    max-width:800px;
-    margin:0 auto;
-  }
-}
-
-body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 10px;
-    background: #121212;
-    color: #fff;
-    overflow-x: hidden;
-}
-
-#participantBar{
-    background:#1E1E1E;
-    border-radius:12px;
-    padding:12px;
-    margin: 6px 0 12px;
-}
-
-#participantBar .row{
-    display:flex;
-    gap:10px;
-    align-items:center;
-}
-
-#participantInput{
-    flex:1;
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-}
-
-#participantBtn{
-    width:auto;
-    padding: 12px 16px;
-    font-size: 16px;
-    border:none;
-    border-radius: 10px;
-    background: #007bff;
-    color:#fff;
-    cursor:pointer;
-    white-space:nowrap;
-}
-#participantBtn:hover{ background:#2a90ff; }
-
-#preview{
-    margin-top:20px;
-    text-align:center;
-}
-#preview img{
-    width:260px;
-    background:#fff;
-    border-radius:6px;
-}
-
-h2 { text-align: center; font-size: 22px; margin: 12px 0; text-decoration: underline;}
-.list-container {position: relative; min-height: 200px;}
-.item {
-    padding: 14px;
-    margin: 6px 0;
-    border-radius: 12px;
-    background: #1E1E1E;
-    font-size: 18px;
-    text-align: center;
-    cursor: pointer;
-    color: #fff;
-    user-select: none;
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.4s ease;
-}
-.item.selected {background: #F77E2D; color:#fff;}
-
-.back { 
-    text-align: center;
-    color: #fff;
-    cursor: pointer;
-    margin-bottom: 10px;
-    font-size: 16px;
-    padding: 10px 25px;
-    border-radius: 50px;
-    background-color: #007bff;
-    display: inline-block;
-}
-
-button.main {
-    width: 100%;
-    padding: 14px;
-    font-size: 17px;
-    border:none;
-    border-radius: 10px;
-    background: #F77E2D;
-    color:#fff;
-    margin-top: 12px;
-    cursor:pointer;
-}
-button.main:hover { background:#ff9d5c; }
-
-#resetBtn { margin-top:24px; background:#832e2e; }
-#resetBtn:hover { background:#ad2f2f; }
-
-canvas { display:none; }
-
-@media (max-width:480px){
-  .item { font-size:16px; padding:12px; }
-  h2 { font-size:20px; }
-  #history { font-size:14px; }
-  #preview img{ width:240px; }
-  #participantInput { font-size:16px; }
-}
-</style>
 </head>
+
 <body>
 
 <div id="app">
 
-<div class="back" onclick="goBack()">← Назад</div>
-
-<!-- Имя участника всегда видно -->
-<div id="participantBar">
-
-  <div style="margin-bottom:8px;">Участник:</div>
-
-  <div class="row">
-    <input id="participantInput" placeholder="Введите имя (можно менять в любой момент)">
-    <button id="participantBtn" onclick="applyParticipant()">Внести</button>
-  </div>
-</div>
-    
-<h2 id="title"></h2>
-<div class="list-container" id="list"></div>
-<button class="main" onclick="generateReceipt()">Сгенерировать чек</button>
-
-<div style="
-    margin-top:18px;
-    padding:12px;
-    background:#1E1E1E;
-    border-radius:12px;
-">
-
-    <div style="
-        margin-bottom:8px;
-        font-size:15px;
-        color:#ccc;
-    ">
-        🕒 Время в чеке
+    <div class="back" onclick="goBack()">
+        ← Назад
     </div>
 
-    <select id="timeOffsetSelect"
-            style="
-                width:100%;
-                padding:12px;
-                font-size:16px;
-                border:none;
-                border-radius:10px;
-                background:#2b2b2b;
-                color:white;
-            ">
-        <option value="0">0 минут</option>
-        <option value="-5">−5 минут</option>
-        <option value="-10">−10 минут</option>
-        <option value="-15">−15 минут</option>
-        <option value="-20">−20 минут</option>
-        <option value="-25">−25 минут</option>
-        <option value="-30">−30 минут</option>
-        <option value="-40">−40 минут</option>
-        <option value="-50">−50 минут</option>
-        <option value="-60">−60 минут</option>
-    </select>
+    <!-- ========================= -->
+    <!-- Участник                  -->
+    <!-- ========================= -->
+
+    <div id="participantBar">
+
+        <div class="participantTitle">
+            Участник
+        </div>
+
+        <div class="row">
+
+            <input
+                id="participantInput"
+                placeholder="Введите имя">
+
+            <button
+                id="participantBtn"
+                onclick="applyParticipant()">
+                Внести
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- Меню                      -->
+    <!-- ========================= -->
+
+    <h2 id="title"></h2>
+
+    <div
+        id="list"
+        class="list-container">
+    </div>
+
+    <!-- ========================= -->
+    <!-- Кнопки                    -->
+    <!-- ========================= -->
+
+    <button
+        class="main"
+        onclick="generateReceipt()">
+        Сгенерировать чек
+    </button>
+
+    <!-- ========================= -->
+    <!-- Смещение времени          -->
+    <!-- ========================= -->
+
+    <div id="timeBar">
+
+        <span class="clockIcon">
+            🕒
+        </span>
+
+        <select id="timeOffsetSelect">
+
+            <option value="0">0 мин</option>
+
+            <option value="-5">−5</option>
+
+            <option value="-10">−10</option>
+
+            <option value="-15">−15</option>
+
+            <option value="-20">−20</option>
+
+            <option value="-25">−25</option>
+
+            <option value="-30">−30</option>
+
+            <option value="-40">−40</option>
+
+            <option value="-50">−50</option>
+
+            <option value="-60">−60</option>
+
+        </select>
+
+    </div>
+
+    <button
+        id="resetBtn"
+        class="main"
+        onclick="resetPage()">
+        Сброс
+    </button>
+
+    <!-- ========================= -->
+    <!-- Превью                    -->
+    <!-- ========================= -->
+
+    <div id="preview"></div>
+
+    <canvas id="canvas"></canvas>
 
 </div>
 
-<button class="main" id="resetBtn" onclick="resetPage()">Сброс</button>
-
-<div id="preview"></div>
-
-<canvas id="canvas"></canvas>
+<script src="app.js"></script>
 
 <script>
-let historyStack = [];
-let selectedWords = [];
-let participant = "";
-let currentPage = "Закуски";
 
-let timeOffset = parseInt(localStorage.getItem("timeOffset") || "0", 10);
-    
-// ===== Лого для чека (лежит рядом с этим HTML) =====
-const logoImg = new Image();
-logoImg.src = "logo_menu.png";
-logoImg.onload = () => updateReceiptPreview(); // как только загрузилось — перерисуем превью
-logoImg.onerror = () => { /* если файла нет — просто рисуем без лого */ };
-
-const pages = {
-  Закуски:["Сырное","Рулетики","Мясная","Сморчки","Острые","Раки","Мидии"],
-  Мясо:["Пикантная","Бифштекс","Хаггис","Перепела","Дичь"],
-  Супы:["Биск","Деревенский","Харчо","Пивной","Диетический"],
-  Основные:["Хинкали","Паста","Долма","Буррито","Плов"],
-  Рыбный:["Дорадо","Палтус","Белуга","Хек","Пангасиус"],
-  Булки:["Пампушка","Пражская","Кекс","Плетенка","Крендель"],
-  Хлеб:["Португальский","Пури","Калач","Пшенично","Кумач"],
-  Пироги:["Пирожное Н","Картофельный","Карибский","Пирожное М","Кляфути"],
-  Десерты:["Карамельный","Птичье","Профитроли","Кулич","Круассан"],
-  Кофе:["Какао","Двойное какао","Латте","Имбирный Чай","Облепиховый Чай"],
-  Прохладительные:["Лимонад","Вода","Добрый","Сок","Смузи"]
-};
-
-const transition = {
-  Закуски:{"Сырное":"Супы","Рулетики":"Рыбный","Мясная":"Мясо","Сморчки":"Супы","Острые":"Основные","Раки":"Рыбный","Мидии":"Мясо"},
-  Мясо:{"Пикантная":"Пироги","Бифштекс":"Булки","Хаггис":"Хлеб","Перепела":"Пироги","Дичь":"Десерты"},
-  Супы:{"Биск":"Булки","Деревенский":"Десерты","Харчо":"Хлеб","Пивной":"Пироги","Диетический":"Десерты"},
-  Основные:{"Хинкали":"Хлеб","Паста":"Пироги","Долма":"Десерты","Буррито":"Булки","Плов":"Пироги"},
-  Рыбный:{"Дорадо":"Десерты","Палтус":"Пироги","Белуга":"Булки","Хек":"Хлеб","Пангасиус":"Пироги"},
-  Булки:{"Пампушка":"Прохладительные","Пражская":"Прохладительные","Кекс":"Кофе","Плетенка":"Прохладительные","Крендель":"Кофе"},
-  Хлеб:{"Португальский":"Прохладительные","Пури":"Прохладительные","Калач":"Кофе","Пшенично":"Прохладительные","Кумач":"Кофе"},
-  Пироги:{"Пирожное Н":"Прохладительные","Картофельный":"Кофе","Карибский":"Кофе","Пирожное М":"Прохладительные","Кляфути":"Кофе"},
-  Десерты:{"Карамельный":"Кофе","Птичье":"Прохладительные","Профитроли":"Прохладительные","Кулич":"Кофе","Круассан":"Кофе"},
-  Кофе:{},
-  Прохладительные:{}
-};
-
-// shortNames — короткие названия (использовались для списка на странице раньше). Сейчас список показывает fullNames.
-// Можно оставить для будущих вариантов UI.
-const shortNames = {
-  "Сырное":"Сырное","Рулетики":"Рулетики","Мясная":"Мясная","Сморчки":"Сморчки","Острые":"Острые","Раки":"Раки","Мидии":"Мидии",
-  "Пикантная":"Пикантная","Бифштекс":"Бифштекс","Хаггис":"Хаггис","Перепела":"Перепела","Дичь":"Дичь",
-  "Биск":"Биск","Деревенский":"Деревенский","Харчо":"Харчо","Пивной":"Пивной","Диетический":"Диетический",
-  "Хинкали":"Хинкали","Паста":"Паста","Долма":"Долма","Буррито":"Буррито","Плов":"Плов",
-  "Дорадо":"Дорадо","Палтус":"Палтус","Белуга":"Белуга","Хек":"Хек","Пангасиус":"Пангасиус",
-  "Пампушка":"Пампушка","Пражская":"Пражская","Кекс":"Кекс","Плетенка":"Плетенка","Крендель":"Крендель",
-  "Португальский":"Португальский","Пури":"Пури","Калач":"Калач","Пшенично":"Пшенично","Кумач":"Кумач",
-  "Пирожное Н":"Пирожное Н","Картофельный":"Картофельный","Карибский":"Карибский","Пирожное М":"Пирожное М","Кляфути":"Кляфути",
-  "Карамельный":"Карамельный","Птичье":"Птичье","Профитроли":"Профитроли","Кулич":"Кулич","Круассан":"Круассан",
-  "Какао":"Какао","Двойное какао":"Двойное какао","Латте":"Латте","Имбирный Чай":"Имбирный Чай","Облепиховый Чай":"Облепиховый Чай",
-  "Лимонад":"Лимонад","Вода":"Вода","Добрый":"Добрый","Сок":"Сок","Смузи":"Смузи"
-};
-
-// fullNames — ПОЛНЫЕ названия блюд.
-// Использование:
-// 1) На странице (в списках выбора) показываем fullNames[item]
-// 2) В чеке (canvas) тоже печатаем fullNames[item]
-const fullNames = {
-  "Сырное":"Сырное ассорти","Рулетики":"Рулетики","Мясная":"Мясная тарелка","Сморчки":"Сморчки","Острые":"Острые креветки","Раки":"Раки","Мидии":"Мидии",
-  "Пикантная":"Пикантная курица","Бифштекс":"Бифштекс","Хаггис":"Хаггис","Перепела":"Перепела табака","Дичь":"Дичь",
-  "Биск":"Биск","Деревенский":"Деревенский суп","Харчо":"Харчо","Пивной":"Пивной суп","Диетический":"Диетический суп",
-  "Хинкали":"Хинкали","Паста":"Паста Путтанеска","Долма":"Долма","Буррито":"Буррито","Плов":"Плов с курицей",
-  "Дорадо":"Дорадо","Палтус":"Палтус","Белуга":"Белуга","Хек":"Хек","Пангасиус":"Пангасиус",
-  "Пампушка":"Пампушка","Пражская":"Пражская булочка","Кекс":"Кекс","Плетенка":"Плетёнка","Крендель":"Крендель",
-  "Португальский":"Португальский хлеб","Пури":"Пури","Калач":"Калач","Пшенично":"Пшенично-ржаной хлеб","Кумач":"Кумач",
-  "Пирожное Н":"Пирожное Наполеон","Картофельный":"Картофельный пирог","Карибский":"Карибский пирог","Пирожное М":"Пирожное «Медовик»","Кляфути":"Кляфути с вишней",
-  "Карамельный":"Карамельный пудинг","Птичье":"Птичье молоко","Профитроли":"Профитроли","Кулич":"Кулич краффин","Круассан":"Круассан с шоколадом",
-  "Какао":"Какао с зефиром","Двойное какао":"Двойное какао","Латте":"Латте","Имбирный Чай":"Имбирный Чай","Облепиховый Чай":"Облепиховый Чай",
-  "Лимонад":"Лимонад","Вода":"Вода Тассай","Добрый":"Добрый Cola","Сок":"Сок","Смузи":"Смузи"
-};
-
-const prices = {
-  "Сырное":1600,"Рулетики":1850,"Мясная":1450,"Сморчки":1600,"Острые":1700,"Раки":1850,"Мидии":1450,
-  "Пикантная":2350,"Бифштекс":2500,"Хаггис":2450,"Перепела":2350,"Дичь":2400,
-  "Биск":2350,"Деревенский":2250,"Харчо":2300,"Пивной":2200,"Диетический":2250,
-  "Хинкали":2200,"Паста":2100,"Долма":2150,"Буррито":2250,"Плов":2100,
-  "Дорадо":2000,"Палтус":1950,"Белуга":2100,"Хек":2050,"Пангасиус":1950,
-  "Пампушка":700,"Пражская":700,"Кекс":600,"Плетенка":700,"Крендель":600,
-  "Португальский":750,"Пури":750,"Калач":650,"Пшенично":750,"Кумач":650,
-  "Пирожное Н":850,"Картофельный":750,"Карибский":750,"Пирожное М":850,"Кляфути":750,
-  "Карамельный":700,"Птичье":800,"Профитроли":800,"Кулич":700,"Круассан":700,
-  "Какао":550,"Двойное какао":550,"Латте":550,"Имбирный Чай":550,"Облепиховый Чай":550,
-  "Лимонад":450,"Вода":450,"Добрый":450,"Сок":450,"Смузи":450
-};
-
-// ===== Внесение имени =====
-function applyParticipant(){
-  const val = document.getElementById("participantInput").value.trim();
-  participant = val;
-  updateReceiptPreview();
-}
-    const timeSelect = document.getElementById("timeOffsetSelect");
-
-timeSelect.value = timeOffset;
-
-timeSelect.addEventListener("change", () => {
-
-    timeOffset = parseInt(timeSelect.value,10);
-
-    localStorage.setItem("timeOffset", timeOffset);
-
-    updateReceiptPreview();
-
-});
-
-// Enter в поле = "Внести"
-document.addEventListener("keydown", (e) => {
-  const el = document.activeElement;
-  if (el && el.id === "participantInput" && e.key === "Enter") {
-    e.preventDefault();
-    applyParticipant();
-  }
-});
-
-// ===== Рендер страницы =====
-function renderPage(page){
-  // Если вернулись из финала — возвращаем меню
-  setFinalMode(false);
-  currentPage = page;
-
-  const listDiv = document.getElementById("list");
-  listDiv.innerHTML = "";
-  document.getElementById("title").textContent = page;
-
-  (pages[page] || []).forEach(item => {
-    const div = document.createElement("div");
-    div.className = "item";
-    // Название для ОТОБРАЖЕНИЯ НА СТРАНИЦЕ (список блюд)
-    div.textContent = (fullNames[item] || item);
-    if(selectedWords.includes(item)) div.classList.add("selected");
-    div.onclick = () => selectItem(page, item);
-    listDiv.appendChild(div);
-  });
-
-  updateReceiptPreview();
-}
-
-// ===== Общая отрисовка чека (и для превью, и для сохранения) =====
-function renderReceiptToCanvas({ download = false } = {}) {
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-
-  // Увеличиваем качество скачиваемого чека в 2 раза
-  const scale = download ? 2 : 1;
-
-  const width = 300;
-  const lineHeight = 28;
-
-  // запас под лого + заголовок
-  const topPadding = 198;
-  const bottomPadding = 120;
-  const emptyLines = 1;
-
-  const height = topPadding + bottomPadding + (selectedWords.length + emptyLines + 1) * lineHeight;
-  canvas.width = Math.round(width * scale);
-  canvas.height = Math.round(height * scale);
-  // Рисуем в «логических» пикселях, но с увеличенной плотностью
-  ctx.setTransform(scale, 0, 0, scale, 0, 0);
-
-  // фон
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, width, height);
-
-  // ===== Лого (если есть) =====
-  // Рисуем в верхней части, по центру
-  if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
-    const maxW = 280;
-    const maxH = 140;
-    const scale = Math.min(maxW / logoImg.naturalWidth, maxH / logoImg.naturalHeight);
-    const drawW = Math.round(logoImg.naturalWidth * scale);
-    const drawH = Math.round(logoImg.naturalHeight * scale);
-    const x = Math.round((width - drawW) / 2);
-    const y = 10;
-    ctx.drawImage(logoImg, x, y, drawW, drawH);
-  }
-
-  // шапка: убрано слово "Сок"
-  ctx.fillStyle = "#000";
-
-  // позиции
-  ctx.textAlign = "left";
-  ctx.font = "18px monospace";
-  let y = topPadding;
-
-  selectedWords.forEach(item => {
-    // Название для ЧЕКА (печать в canvas)
-    const text = fullNames[item] || item;
-    const priceStr = (prices[item] ?? 0) + "₽";
-    const maxWidth = width - 20;
-
-    let dotsCount = Math.floor(
-      (maxWidth - ctx.measureText(text).width - ctx.measureText(priceStr).width) /
-      ctx.measureText(".").width
-    );
-    if(dotsCount < 1) dotsCount = 1;
-    const dots = ".".repeat(dotsCount);
-
-    ctx.fillText(text + dots + priceStr, 10, y);
-    y += lineHeight;
-  });
-
-  // линия + итог
-  ctx.beginPath();
-  ctx.moveTo(10, y);
-  ctx.lineTo(width - 10, y);
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  y += lineHeight;
-
-  const sumText = "Итого";
-  const totalSum = selectedWords.reduce((sum, item) => sum + (prices[item] || 0), 0);
-  const sumPrice = totalSum + "₽";
-
-  let dotsCount = Math.floor(
-    (width - 20 - ctx.measureText(sumText).width - ctx.measureText(sumPrice).width) /
-    ctx.measureText(".").width
-  );
-  if(dotsCount < 1) dotsCount = 1;
-  const dots = ".".repeat(dotsCount);
-
-  ctx.fillText(sumText + dots + sumPrice, 10, y);
-  y += lineHeight;
-
-  // “пустота” как в настоящем чеке
-  for(let i = 0; i < emptyLines; i++) y += lineHeight;
-
-  // футер
-  const now = new Date(Date.now() + timeOffset * 60000);
-  ctx.textAlign = "center";
-  ctx.font = "16px sans-serif";
-  ctx.fillText(`${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, width / 2, y + 10);
-  // Спасибо: с именем или без
-  ctx.font = "18px sans-serif";
-  if (participant && participant.trim()) {
-    const name = participant.trim().toUpperCase();
-    ctx.fillText(`Спасибо, ${name},`, width / 2, y + 40);
-    ctx.fillText("за выбор нашего ресторана", width / 2, y + 60);
-  } else {
-    ctx.fillText(`Спасибо`, width / 2, y + 40);
-    ctx.fillText("за выбор нашего ресторана", width / 2, y + 60);
-  }
-
-  if (download) {
-    const link = document.createElement("a");
-    link.download = "cheque.jpg";
-    link.href = canvas.toDataURL("image/jpeg", 0.95);
-    link.click();
-    return;
-  }
-
-  // Превью
-  const dataUrl = canvas.toDataURL("image/jpeg");
-  document.getElementById("preview").innerHTML = `<img src="${dataUrl}" alt="Чек">`;
-}
-
-// ===== Обновление превью чека (всегда) =====
-function updateReceiptPreview(){
-  renderReceiptToCanvas({ download: false });
-}
-
-// ===== Режим финала: прячем меню, превью занимает его место =====
-const _previewEl = document.getElementById("preview");
-const _previewOriginalParent = _previewEl.parentNode;
-const _previewOriginalNext = _previewEl.nextSibling;
-
-function setFinalMode(isFinal){
-  const titleEl = document.getElementById("title");
-  const listEl = document.getElementById("list");
-
-  if(isFinal){
-    // прячем заголовок и список
-    titleEl.style.display = "none";
-    listEl.style.display = "none";
-
-    // переносим превью туда, где было меню (сразу под блоком имени)
-    const participantBar = document.getElementById("participantBar");
-    participantBar.insertAdjacentElement("afterend", _previewEl);
-
-    // аккуратный отступ сверху
-    _previewEl.style.marginTop = "12px";
-  } else {
-    // возвращаем меню
-    titleEl.style.display = "";
-    listEl.style.display = "";
-
-    // возвращаем превью на исходное место (как было в верстке)
-    if (_previewOriginalNext) _previewOriginalParent.insertBefore(_previewEl, _previewOriginalNext);
-    else _previewOriginalParent.appendChild(_previewEl);
-
-    _previewEl.style.marginTop = "";
-  }
-}
-
-// ===== Выбор элемента =====
-function selectItem(currentPageLocal, item) {
-  if (selectedWords.length > historyStack.length) return;
-
-  selectedWords.push(item);
-  updateReceiptPreview();
-
-  // После выбора 4-го блюда прячем меню и показываем чек на его месте
-  if (selectedWords.length >= 4) {
-    setFinalMode(true);
-    copyToClipboard();
-    return;
-  }
-
-  const nextPage = transition[currentPageLocal]?.[item];
-
-  if (nextPage) {
-    historyStack.push(currentPageLocal);
-    renderPage(nextPage);
-  } else {
-    copyToClipboard();
-  }
-}
-
-function copyToClipboard(){
-  let text = "Сок\n\n";
-  selectedWords.forEach(w => { text += (fullNames[w] || w) + " " + (prices[w] ?? 0) + "₽\n"; });
-  text += `\nСпасибо за участие\n${(participant || "").toUpperCase()}`;
-  navigator.clipboard.writeText(text);
-}
-
-function goBack() {
-  if (selectedWords.length === 0) return;
-
-  if (selectedWords.length > historyStack.length) {
-    selectedWords.pop();
-      updateReceiptPreview();
-    renderPage(currentPage);
-    return;
-  }
-
-  selectedWords.pop();
-  const prevPage = historyStack.pop() || "Закуски";
-  updateReceiptPreview();
-  renderPage(prevPage);
-}
-
-// ===== Сброс =====
-function resetPage() {
-  selectedWords = [];
-  historyStack = [];
-  participant = "";
-  setFinalMode(false);
-  const input = document.getElementById("participantInput");
-  if (input) input.value = "";
-  renderPage("Закуски");
-}
-
-// ===== Генерация чека (скачать) =====
-function generateReceipt(){
-  if(selectedWords.length === 0) return alert("Выберите хотя бы одно блюдо");
-  renderReceiptToCanvas({ download: true });
-}
-
-// ===== Старт =====
-renderPage("Закуски");
-// первоначальное превью (сработает даже если лого ещё грузится)
-updateReceiptPreview();
-
-</script>
-
-<script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      const registration = await navigator.serviceWorker.register(
-        "/Menubeta.github.io/sw.js"
-      );
 
-      registration.addEventListener("updatefound", () => {
-        const worker = registration.installing;
-        if (!worker) return;
+    window.addEventListener("load", async () => {
 
-        worker.addEventListener("statechange", () => {
-          if (
-            worker.state === "installed" &&
-            navigator.serviceWorker.controller
-          ) {
-            if (confirm("Доступна новая версия приложения. Обновить сейчас?")) {
-              window.location.reload();
-            }
-          }
-        });
-      });
+        try {
 
-      setInterval(() => {
-        registration.update();
-      }, 60000);
+            const registration =
+                await navigator.serviceWorker.register(
+                    "/Menubeta.github.io/sw.js"
+                );
 
-    } catch (e) {
-      console.error("Service Worker error:", e);
-    }
-  });
+            registration.addEventListener("updatefound", () => {
+
+                const worker = registration.installing;
+
+                if (!worker) return;
+
+                worker.addEventListener("statechange", () => {
+
+                    if (
+                        worker.state === "installed" &&
+                        navigator.serviceWorker.controller
+                    ) {
+
+                        if (confirm("Доступна новая версия приложения. Обновить сейчас?")) {
+
+                            window.location.reload();
+
+                        }
+
+                    }
+
+                });
+
+            });
+
+            setInterval(() => {
+
+                registration.update();
+
+            }, 60000);
+
+        }
+
+        catch (e) {
+
+            console.error(e);
+
+        }
+
+    });
+
 }
-</script>
 
-</div>
+</script>
 
 </body>
 </html>
