@@ -414,7 +414,7 @@ function renderReceiptToCanvas({ download = false } = {}) {
   for(let i = 0; i < emptyLines; i++) y += lineHeight;
 
   // футер
-  const now = new Date();
+ const now = getOffsetTime();
   ctx.textAlign = "center";
   ctx.font = "16px sans-serif";
   ctx.fillText(`${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, width / 2, y + 10);
@@ -579,26 +579,34 @@ if ("serviceWorker" in navigator) {
 }
     let timeOffset = parseInt(localStorage.getItem("timeOffset") || "0", 10);
 
+// ===== УСТАНОВКА СМЕЩЕНИЯ ВРЕМЕНИ =====
 function setTimeOffset(val){
-  timeOffset = parseInt(val,10);
+  timeOffset = parseInt(val, 10);
   localStorage.setItem("timeOffset", timeOffset);
 
   updateReceiptPreview();
 
-  // лёгкая вибрация (если телефон)
-  if (navigator.vibrate) navigator.vibrate(20);
+  // лёгкая вибрация
+  if (navigator.vibrate) navigator.vibrate(15);
 
   document.querySelectorAll("#timeSlider button")
     .forEach(b => b.classList.remove("active"));
 
-  const active = document.querySelector(`[data-val="${val}"]`);
+  const active = document.querySelector(`#timeSlider button[data-val="${val}"]`);
   if (active) active.classList.add("active");
 }
 
+// ===== ПРИМЕНЕНИЕ СМЕЩЕНИЯ В ЧЕК =====
+function getOffsetTime(){
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + timeOffset);
+  return now;
+}
+
+// ===== ИНИЦИАЛИЗАЦИЯ СЛАЙДЕРА =====
 document.addEventListener("DOMContentLoaded", () => {
   const slider = document.getElementById("timeSlider");
-
-  if (!slider) return; // 🔥 защита чтобы не ломалось
+  if (!slider) return;
 
   slider.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
