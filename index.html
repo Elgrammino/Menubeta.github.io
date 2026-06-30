@@ -153,6 +153,31 @@ canvas { display:none; }
   <div class="row">
     <input id="participantInput" placeholder="Введите имя (можно менять в любой момент)">
     <button id="participantBtn" onclick="applyParticipant()">Внести</button>
+      <div style="margin-top:12px;">
+    🕒 Время в чеке
+</div>
+<select id="timeOffsetSelect"
+        style="
+            width:100%;
+            margin-top:8px;
+            padding:10px;
+            font-size:16px;
+            border-radius:10px;
+            border:none;
+            background:#2b2b2b;
+            color:white;
+        ">
+    <option value="0">0 минут</option>
+    <option value="-5">−5 минут</option>
+    <option value="-10">−10 минут</option>
+    <option value="-15">−15 минут</option>
+    <option value="-20">−20 минут</option>
+    <option value="-25">−25 минут</option>
+    <option value="-30">−30 минут</option>
+    <option value="-40">−40 минут</option>
+    <option value="-50">−50 минут</option>
+    <option value="-60">−60 минут</option>
+</select>
   </div>
 </div>
 
@@ -171,6 +196,8 @@ let selectedWords = [];
 let participant = "";
 let currentPage = "Закуски";
 
+let timeOffset = parseInt(localStorage.getItem("timeOffset") || "0", 10);
+    
 // ===== Лого для чека (лежит рядом с этим HTML) =====
 const logoImg = new Image();
 logoImg.src = "logo_menu.png";
@@ -259,6 +286,19 @@ function applyParticipant(){
   participant = val;
   updateReceiptPreview();
 }
+    const timeSelect = document.getElementById("timeOffsetSelect");
+
+timeSelect.value = timeOffset;
+
+timeSelect.addEventListener("change", () => {
+
+    timeOffset = parseInt(timeSelect.value,10);
+
+    localStorage.setItem("timeOffset", timeOffset);
+
+    updateReceiptPreview();
+
+});
 
 // Enter в поле = "Внести"
 document.addEventListener("keydown", (e) => {
@@ -383,7 +423,7 @@ function renderReceiptToCanvas({ download = false } = {}) {
   for(let i = 0; i < emptyLines; i++) y += lineHeight;
 
   // футер
-  const now = new Date();
+  const now = new Date(Date.now() + timeOffset * 60000);
   ctx.textAlign = "center";
   ctx.font = "16px sans-serif";
   ctx.fillText(`${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, width / 2, y + 10);
