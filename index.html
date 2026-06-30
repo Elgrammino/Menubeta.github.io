@@ -138,6 +138,22 @@ canvas { display:none; }
   #preview img{ width:240px; }
   #participantInput { font-size:16px; }
 }
+    #timeSlider button{
+  background:#2b2b2b;
+  color:white;
+  border:none;
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:13px;
+  cursor:pointer;
+  transition:0.15s;
+  white-space:nowrap;
+}
+
+#timeSlider button.active{
+  background:#F77E2D;
+  transform:scale(1.1);
+}
 </style>
 
 </head>
@@ -159,6 +175,21 @@ canvas { display:none; }
 <h2 id="title"></h2>
 <div class="list-container" id="list"></div>
 <button class="main" onclick="generateReceipt()">Сгенерировать чек</button>
+    <div style="margin-top:12px; display:flex; align-items:center; gap:10px;">
+  🕒
+  <div id="timeSlider" style="display:flex; gap:6px; overflow-x:auto; flex:1;">
+    <button data-val="0">0</button>
+    <button data-val="-5">-5</button>
+    <button data-val="-10">-10</button>
+    <button data-val="-15">-15</button>
+    <button data-val="-20">-20</button>
+    <button data-val="-25">-25</button>
+    <button data-val="-30">-30</button>
+    <button data-val="-40">-40</button>
+    <button data-val="-50">-50</button>
+    <button data-val="-60">-60</button>
+  </div>
+</div>
 <button class="main" id="resetBtn" onclick="resetPage()">Сброс</button>
 
 <div id="preview"></div>
@@ -546,6 +577,37 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
+    let timeOffset = parseInt(localStorage.getItem("timeOffset") || "0", 10);
+
+function setTimeOffset(val){
+  timeOffset = parseInt(val,10);
+  localStorage.setItem("timeOffset", timeOffset);
+
+  updateReceiptPreview();
+
+  // лёгкая вибрация (если телефон)
+  if (navigator.vibrate) navigator.vibrate(20);
+
+  document.querySelectorAll("#timeSlider button")
+    .forEach(b => b.classList.remove("active"));
+
+  const active = document.querySelector(`[data-val="${val}"]`);
+  if (active) active.classList.add("active");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const slider = document.getElementById("timeSlider");
+
+  if (!slider) return; // 🔥 защита чтобы не ломалось
+
+  slider.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      setTimeOffset(btn.dataset.val);
+    });
+  });
+
+  setTimeOffset(timeOffset);
+});
 </script>
 
 </div>
