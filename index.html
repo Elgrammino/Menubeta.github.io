@@ -175,20 +175,23 @@ canvas { display:none; }
 <h2 id="title"></h2>
 <div class="list-container" id="list"></div>
 <button class="main" onclick="generateReceipt()">Сгенерировать чек</button>
-    <div style="margin-top:12px; display:flex; align-items:center; gap:10px;">
-  🕒
-  <div id="timeSlider" style="display:flex; gap:6px; overflow-x:auto; flex:1;">
-    <button data-val="0">0</button>
-    <button data-val="-5">-5</button>
-    <button data-val="-10">-10</button>
-    <button data-val="-15">-15</button>
-    <button data-val="-20">-20</button>
-    <button data-val="-25">-25</button>
-    <button data-val="-30">-30</button>
-    <button data-val="-40">-40</button>
-    <button data-val="-50">-50</button>
-    <button data-val="-60">-60</button>
-  </div>
+  <div id="timeSlider" style="margin-top:12px; display:flex; align-items:center; gap:10px; justify-content:center;">
+  
+  <span style="font-size:18px;">🕒</span>
+
+  <button id="timeMinus" class="timeBtn">◀</button>
+
+  <div id="timeValue" style="
+    min-width:60px;
+    text-align:center;
+    font-size:16px;
+    background:#2b2b2b;
+    padding:6px 10px;
+    border-radius:8px;
+  ">0</div>
+
+  <button id="timePlus" class="timeBtn">▶</button>
+
 </div>
 <button class="main" id="resetBtn" onclick="resetPage()">Сброс</button>
 
@@ -604,18 +607,24 @@ function getOffsetTime(){
 }
 
 // ===== ИНИЦИАЛИЗАЦИЯ СЛАЙДЕРА =====
-document.addEventListener("DOMContentLoaded", () => {
-  const slider = document.getElementById("timeSlider");
-  if (!slider) return;
+const timeValueEl = document.getElementById("timeValue");
 
-  slider.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      setTimeOffset(btn.dataset.val);
-    });
-  });
-
-  setTimeOffset(timeOffset);
+document.getElementById("timeMinus").addEventListener("click", () => {
+  timeOffset -= 5;
+  localStorage.setItem("timeOffset", timeOffset);
+  timeValueEl.textContent = timeOffset;
+  updateReceiptPreview();
 });
+
+document.getElementById("timePlus").addEventListener("click", () => {
+  timeOffset += 5;
+  localStorage.setItem("timeOffset", timeOffset);
+  timeValueEl.textContent = timeOffset;
+  updateReceiptPreview();
+});
+
+// начальное значение
+timeValueEl.textContent = timeOffset;
 </script>
 
 </div>
